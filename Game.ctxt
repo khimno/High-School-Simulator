@@ -1,0 +1,19 @@
+#BlueJ class context
+comment0.target=Game
+comment1.params=stage
+comment1.target=void\ start(javafx.stage.Stage)
+comment2.params=
+comment2.target=void\ updateLabel()
+comment3.params=event
+comment3.target=void\ showInfo(javafx.event.ActionEvent)
+comment4.params=event
+comment4.target=void\ buttonClick(javafx.event.ActionEvent)
+comment5.params=event
+comment5.target=void\ cheating(javafx.event.ActionEvent)
+comment6.params=event
+comment6.target=boolean\ cramWork(javafx.event.ActionEvent)
+comment7.params=event
+comment7.target=void\ sleep(javafx.event.ActionEvent)
+comment8.params=
+comment8.target=boolean\ checkStatus()
+numComments=9
