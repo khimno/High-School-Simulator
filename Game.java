@@ -1,25 +1,22 @@
 import java.lang.*;
 import java.util.*;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.Scene;
+import javafx.event.*;
+import javafx.scene.*;
 import javafx.geometry.Insets;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-import javafx.scene.control.*;
-import javafx.scene.control.Alert.AlertType;
-
 public class Game extends Application {
     Alert info = new Alert(Alert.AlertType.INFORMATION, "You lose if grade < 50, fatigue > 150, stress > 250 or you miss 250 assignments or more.\nBalance Doing Work, Cramming Work and Sleeping to win.\nCheat only when you have to.");
-    private int done = 0;
-    private int str = 0;
-    private int missing = 0;
-    private int fatigue = 0;
+
+    private int workDone = 0;
+    private int stressLevel = 0;
+    private int missingWork = 0;
+    private int fatigueLevel = 0;
     private double grade = 100.0;
     private int[] crasher = new int[2];
+
     private Label adone = new Label("Assignments done: 0");
     private Label stress = new Label("Stress level: 0");
     private Label miss = new Label("Missing Assignments: 0");
@@ -27,16 +24,15 @@ public class Game extends Application {
     private Label gr = new Label("Grade: 100.0%");
     private Label status = new Label("Get to work!");
     
+    private Button doWork = new Button("Do work");
+    private Button cramwork = new Button("Cram Work");
+    private Button rulesButton = new Button("Information");
+    private Button sleep = new Button("Sleep");
+    private Button cheat = new Button("Cheat");
     @Override
     public void start(Stage stage) {
-        // Create a Button or any control item
-        Button myButton = new Button("Do work");
-        Button cramwork = new Button("Cram Work");
-        Button rulesButton = new Button("Information");
-        Button sleep = new Button("Sleep");
         info.setHeaderText("Playing the Game");
         info.setTitle("Rules and Information");
-        Button cheat = new Button("Cheat");
         // Create a new grid pane
         GridPane pane = new GridPane();
         pane.setPadding(new Insets(10, 10, 10, 10));
@@ -44,7 +40,7 @@ public class Game extends Application {
         pane.setVgap(10);
         pane.setHgap(10);
         //set an action on the button using method reference
-        myButton.setOnAction(this::buttonClick);
+        doWork.setOnAction(this::doWork);
         cramwork.setOnAction(this::cramWork);
         cheat.setOnAction(this::cheating);
         sleep.setOnAction(this::sleep);
@@ -56,7 +52,7 @@ public class Game extends Application {
         pane.add(stress,1,3);
         pane.add(fat,1,4);
         pane.add(status,1,5);
-        pane.add(myButton, 0, 0);
+        pane.add(doWork, 0, 0);
         pane.add(cramwork, 0, 1);
         pane.add(sleep, 0, 2);
         pane.add(cheat, 0, 3);
@@ -71,10 +67,10 @@ public class Game extends Application {
     }
 
     private void updateLabel(){
-        adone.setText("Assignments done: " + Integer.toString(done));
-        stress.setText("Stress Level: " + Integer.toString(str));
-        miss.setText("Missing Assignments: " + Integer.toString(missing));
-        fat.setText("Fatigue: " + Integer.toString(fatigue));
+        adone.setText("Assignments done: " + Integer.toString(workDone));
+        stress.setText("Stress Level: " + Integer.toString(stressLevel));
+        miss.setText("Missing Assignments: " + Integer.toString(missingWork));
+        fat.setText("Fatigue: " + Integer.toString(fatigueLevel));
         gr.setText("Grade: " + grade + "%");
     }
 
@@ -84,14 +80,14 @@ public class Game extends Application {
         info.showAndWait();
     }
 
-    private void buttonClick(ActionEvent event){
+    private void doWork(ActionEvent event){
         status.setText("Getting work done!");
         checkStatus();
-        done = done + 1;
-        missing = missing + 2;
-        fatigue +=1;
+        workDone = workDone + 1;
+        missingWork = missingWork + 2;
+        fatigueLevel +=1;
         grade -=2;
-        str +=2;
+        stressLevel +=2;
         updateLabel();
         checkStatus();
     }
@@ -108,81 +104,79 @@ public class Game extends Application {
         } else {
             checkStatus();
             status.setText("Copying other's work...");
-            fatigue +=1;
-            str -= 5;
-            missing -=5;
+            fatigueLevel +=1;
+            stressLevel -= 5;
+            missingWork -=5;
             grade +=8;
-            done += 6;
+            workDone += 6;
             updateLabel();
             checkStatus();
         }
     }
 
     private boolean cramWork(ActionEvent event){
-        if(fatigue > 140){
+        if(fatigueLevel > 140){
             status.setText("You are too fatigued to cram work!");
             checkStatus();
             return false;
         }
-        if(str > 240){
+        if(stressLevel > 240){
             status.setText("You are too stressed to work!");
             checkStatus();
             return false;
         }
-        if(missing < 1){
+        if(missingWork < 1){
             status.setText("You don't need to cram!");
             checkStatus();
             return false;
         }
         checkStatus();
         status.setText("Cramming lots of work");
-        done += 2;
-        fatigue += 10;
-        missing -= 1;
+        workDone += 2;
+        fatigueLevel += 10;
+        missingWork -= 1;
         grade +=3;
-        str += 10;
+        stressLevel += 10;
         updateLabel();
         checkStatus();
         return true;
     }
 
     private void sleep(ActionEvent event){
-        if(fatigue < 1 || str < 1){
+        if(fatigueLevel < 1 || stressLevel < 1){
             status.setText("There is no need to sleep.");
             checkStatus();
             return;
         }
         status.setText("Sleeping the day away...");
         checkStatus();
-        missing +=3;
+        missingWork +=3;
         grade -= 4;
-        str -=8;
-        fatigue -= 10;
+        stressLevel -=8;
+        fatigueLevel -= 10;
         updateLabel();
         checkStatus();
     }
 
     private boolean checkStatus(){
         Alert lost = new Alert(Alert.AlertType.ERROR, "you lose");
-        if(fatigue < 0)
-            fatigue = 0;
-        if(str < 0)
-            str = 0;
-        if(missing < 0)
-            missing = 0;
+        if(fatigueLevel < 0)
+            fatigueLevel = 0;
+        if(stressLevel < 0)
+            stressLevel = 0;
+        if(missingWork < 0)
+            missingWork = 0;
         if(grade < 0)    
             grade = 0;
         updateLabel();
-        if(fatigue > 150 || str > 250 || missing >= 250){
+        if(fatigueLevel > 150 || stressLevel > 250 || missingWork >= 250){
             status.setText("You are too worn to keep working!");
             lost.showAndWait();
             System.exit(0);
-            int crash = crasher[100];
         }
         if(grade < 50.0){
             status.setText("You failed school!");
             lost.showAndWait();
-            System.exit(0);
             int crash = crasher[1000];
         }
         return true;
