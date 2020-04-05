@@ -115,16 +115,6 @@ public class Game extends Application {
     }
 
     private boolean cramWork(ActionEvent event){
-        if(fatigueLevel > 140){
-            status.setText("You are too fatigued to cram work!");
-            checkStatus();
-            return false;
-        }
-        if(stressLevel > 240){
-            status.setText("You are too stressed to work!");
-            checkStatus();
-            return false;
-        }
         if(missingWork < 1){
             status.setText("You don't need to cram!");
             checkStatus();
